@@ -11,16 +11,17 @@ const doCORSRequest = (options) => {
     return x;
 };
 
-var baseUrl = "https://trefle.io/api/v1/plants"
+var urlTxt = "https://trefle.io/api/v1/plants" + apiToken
 
-const addParameters = (parameters) =>
-    baseUrl = `${baseUrl}&${parameters}`
+const addParameters = (parameters) => {
+    window.urlTxt = `${urlTxt}&${parameters}`
+}
 
 // Example promise that executes the GET request above and waits for it to finish before resolving
 const corsPromise = () =>
     new Promise((resolve, reject) => {
         const request = doCORSRequest({
-            url: baseUrl + apiToken,
+            url: window.urlTxt,
         });
         resolve(request);
     });
@@ -35,28 +36,31 @@ corsPromise().then(
 );
 
 const searchBar = document.getElementById("search-plant");
-document.getElementById("search-plant-btn").addEventListener("onclick", function(event) {
+document.getElementById("search-plant-btn").addEventListener("click", function(event) {
+    console.log("search for " + searchBar.value)
     addParameters(`q=${searchBar.value}`)
-    console.log(baseUrl)
     corsPromise()
 });
 
 document.getElementById("list-plants-btn").addEventListener("onclick", function(event) {
+    console.log("get the list of plants")
     corsPromise()
 });
 
-document.getElementById("remove-list-plants-btn").addEventListener("onclick", function(event) {
+document.getElementById("remove-list-plants-btn").addEventListener("click", function(event) {
+    console.log("empty the list")
     document.getElementById("response").textContent = "";
 });
 
 //// TODO: ADD WHATEVER FUN CONTENT YOU WANT ////
 
 const handleResponse = (response) => {
-    console.log(baseUrl)
-    if (!response.ok) {
-        document.getElementById("response").textContent = "Not found the result";
-    }
+    console.log(urlTxt)
 
+    if (!response.ok) {
+        document.getElementById("response").textContent = "Error on getting the result";
+    }
+    console.log(response)
     const data = JSON.parse(response).data
     console.log(data)
     document.getElementById("response").textContent = JSON.stringify(data, undefined, 2);
